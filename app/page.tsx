@@ -24,6 +24,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
+import { CATEGORIES } from "../lib/constants";
 import Link from "next/link";
 
 interface Book {
@@ -57,18 +58,23 @@ interface Message {
   createdAt: any;
 }
 
-const CATEGORIES = [
-  { label: "Engineering", icon: "architecture" },
-  { label: "School", icon: "school" },
-  { label: "Competitive Exams", icon: "quiz" },
-  { label: "Novels", icon: "menu_book" },
-  { label: "Self-Help", icon: "psychology" },
-  { label: "Medical", icon: "medical_services" },
-  { label: "Science", icon: "science" },
-  { label: "Arts", icon: "palette" },
-  { label: "Law", icon: "gavel" },
-  { label: "Commerce", icon: "bar_chart" },
-];
+// Icon for each category. Falls back to "menu_book" for anything not listed
+// here, so adding a new category to lib/constants.ts never breaks this page.
+const CATEGORY_ICONS: Record<string, string> = {
+  Novel: "menu_book",
+  Engineering: "architecture",
+  School: "school",
+  College: "school",
+  "Competitive Exam": "quiz",
+  Biography: "person",
+  Comics: "auto_stories",
+  Science: "science",
+  History: "history_edu",
+  "Self Help": "psychology",
+  Other: "category",
+};
+
+const DEFAULT_CATEGORY_ICON = "menu_book";
 
 function HomeContent() {
   const [user, setUser] = useState<User | null>(null);
@@ -450,13 +456,13 @@ function HomeContent() {
             </Link>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 16 }}>
-            {CATEGORIES.map((cat) => (
-              <Link key={cat.label} href={`/books?category=${encodeURIComponent(cat.label)}`} style={{ textDecoration: "none" }}>
+            {CATEGORIES.map((label) => (
+              <Link key={label} href={`/books?category=${encodeURIComponent(label)}`} style={{ textDecoration: "none" }}>
                 <div style={{ backgroundColor: "#eeeeed", borderRadius: 16, aspectRatio: "1", border: "1px solid rgba(196,198,207,0.3)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, cursor: "pointer", transition: "all 0.2s" }}
                   onMouseEnter={(e) => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "#904d00"; el.style.backgroundColor = "#f4f3f2"; }}
                   onMouseLeave={(e) => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(196,198,207,0.3)"; el.style.backgroundColor = "#eeeeed"; }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: 48, color: "#002045" }}>{cat.icon}</span>
-                  <span style={{ fontFamily: "'Source Serif 4', serif", fontSize: 14, fontWeight: 600, color: "#1a1c1c", textAlign: "center", padding: "0 8px" }}>{cat.label}</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: 48, color: "#002045" }}>{CATEGORY_ICONS[label] || DEFAULT_CATEGORY_ICON}</span>
+                  <span style={{ fontFamily: "'Source Serif 4', serif", fontSize: 14, fontWeight: 600, color: "#1a1c1c", textAlign: "center", padding: "0 8px" }}>{label}</span>
                 </div>
               </Link>
             ))}
