@@ -74,18 +74,18 @@ export default function MyBooksPage() {
     <main className="min-h-screen bg-surface">
       <div className="w-full max-w-[1280px] mx-auto px-4 md:px-10 py-6">
         {/* Page Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="font-headline text-[32px] md:text-[48px] leading-tight font-bold text-primary mb-1">
+            <h1 className="font-headline text-[28px] sm:text-[32px] md:text-[48px] leading-tight font-bold text-primary mb-1">
               My Books
             </h1>
-            <p className="text-[16px] text-on-surface-variant">
+            <p className="text-[15px] md:text-[16px] text-on-surface-variant">
               Manage the books you've listed.
             </p>
           </div>
           <Link
             href="/add-book"
-            className="hidden sm:flex items-center gap-1 bg-secondary text-white px-6 py-2.5 rounded-full text-[14px] font-semibold shadow-md hover:brightness-110 transition-all"
+            className="flex items-center gap-1 bg-secondary text-white px-5 sm:px-6 py-2.5 rounded-full text-[14px] font-semibold shadow-md hover:brightness-110 transition-all"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
             List a Book
@@ -127,16 +127,16 @@ export default function MyBooksPage() {
             {books.map((book) => (
               <div
                 key={book.id}
-                className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-5 md:p-6 shadow-[0_4px_20px_-2px_rgba(0,32,69,0.06)]"
+                className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 sm:p-5 md:p-6 shadow-[0_4px_20px_-2px_rgba(0,32,69,0.06)]"
               >
                 <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h2 className="font-headline text-[22px] font-semibold text-primary">
+                      <h2 className="font-headline text-[19px] sm:text-[22px] font-semibold text-primary break-words">
                         {book.title}
                       </h2>
                       {book.condition && (
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-[2px] rounded bg-tertiary-container text-on-tertiary-container">
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-[2px] rounded bg-tertiary-container text-on-tertiary-container shrink-0">
                           {book.condition}
                         </span>
                       )}
@@ -171,13 +171,13 @@ export default function MyBooksPage() {
                   </div>
 
                   <div className="flex md:flex-col items-start gap-2 shrink-0">
-                    <span className="font-headline text-[24px] font-semibold text-primary">
+                    <span className="font-headline text-[20px] sm:text-[24px] font-semibold text-primary">
                       ₹{book.price}
                     </span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-outline-variant/30 flex gap-3">
+                <div className="mt-4 pt-4 border-t border-outline-variant/30 flex flex-wrap gap-3">
                   <Link
                     href={`/edit-book/${book.id}`}
                     className="flex items-center gap-1 bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-[14px] font-semibold hover:brightness-95 transition-all"

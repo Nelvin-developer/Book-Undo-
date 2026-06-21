@@ -262,20 +262,20 @@ function HomeContent() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#faf9f8", fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#1a1c1c" }}>
+    <div style={{ minHeight: "100vh", backgroundColor: "#faf9f8", fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#1a1c1c", overflowX: "hidden", width: "100%" }}>
 
       {/* ── Nav ── */}
       <header style={{ backgroundColor: "#faf9f8", borderBottom: "1px solid #c4c6cf", position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="nav-inner" style={{ maxWidth: 1280, margin: "0 auto", padding: "0 40px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <Link href="/" style={{ textDecoration: "none" }}>
               <span style={{ fontFamily: "'Source Serif 4', serif", fontWeight: 700, fontSize: 24, color: "#002045", letterSpacing: "-0.01em" }}>Book Undo</span>
             </Link>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="nav-actions" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {!authLoading && (user ? (
               <>
-                <Link href="/add-book" style={{ backgroundColor: "#904d00", color: "#fff", padding: "8px 20px", borderRadius: 9999, fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none" }}>List a Book</Link>
+                <Link href="/add-book" className="list-book-btn" style={{ backgroundColor: "#904d00", color: "#fff", padding: "8px 20px", borderRadius: 9999, fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", textDecoration: "none", whiteSpace: "nowrap" }}>List a Book</Link>
 
                 {/* ── Chat icon + dropdown ── */}
                 <div ref={chatDropdownRef} style={{ position: "relative" }}>
@@ -290,7 +290,7 @@ function HomeContent() {
                   </button>
 
                   {chatDropdownOpen && (
-                    <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 320, maxHeight: 420, overflowY: "auto", backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,32,69,0.12)", zIndex: 100 }}>
+                    <div className="chat-dropdown" style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 320, maxHeight: 420, overflowY: "auto", backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 16, boxShadow: "0 8px 24px rgba(0,32,69,0.12)", zIndex: 100 }}>
                       <div style={{ padding: "14px 18px", borderBottom: "1px solid #eeeeed", fontWeight: 700, fontFamily: "'Source Serif 4', serif", fontSize: 16, color: "#002045" }}>
                         My Chats
                       </div>
@@ -325,10 +325,10 @@ function HomeContent() {
                 </div>
 
                 {user.photoURL && <Link href="/my-books"><img src={user.photoURL} alt="Profile" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", border: "2px solid #d6e3ff", cursor: "pointer" }} /></Link>}
-                <button onClick={handleLogout} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#74777f", fontWeight: 500 }}>Sign out</button>
+                <button onClick={handleLogout} className="signout-btn" style={{ background: "none", border: "none", cursor: "pointer", fontSize: 13, color: "#74777f", fontWeight: 500, whiteSpace: "nowrap" }}>Sign out</button>
               </>
             ) : (
-              <button onClick={handleLogin} disabled={loginLoading} style={{ backgroundColor: "#904d00", color: "#fff", padding: "8px 20px", borderRadius: 9999, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", opacity: loginLoading ? 0.6 : 1 }}>
+              <button onClick={handleLogin} disabled={loginLoading} style={{ backgroundColor: "#904d00", color: "#fff", padding: "8px 20px", borderRadius: 9999, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", opacity: loginLoading ? 0.6 : 1, whiteSpace: "nowrap" }}>
                 {loginLoading ? "Signing in…" : "Sign in with Google"}
               </button>
             ))}
@@ -337,38 +337,38 @@ function HomeContent() {
       </header>
 
       {/* ── Hero ── */}
-      <section style={{ backgroundColor: "#f4f3f2", borderBottom: "1px solid #c4c6cf", padding: "80px 40px", textAlign: "center" }}>
+      <section className="hero-section" style={{ backgroundColor: "#f4f3f2", borderBottom: "1px solid #c4c6cf", padding: "80px 40px", textAlign: "center" }}>
         <div style={{ maxWidth: 800, margin: "0 auto" }}>
-          <h1 style={{ fontFamily: "'Source Serif 4', serif", fontSize: "clamp(36px,5vw,56px)", fontWeight: 700, color: "#002045", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: 16 }}>
+          <h1 style={{ fontFamily: "'Source Serif 4', serif", fontSize: "clamp(32px,5vw,56px)", fontWeight: 700, color: "#002045", letterSpacing: "-0.02em", lineHeight: 1.1, marginBottom: 16 }}>
             Give Your Books a <span style={{ color: "#904d00", fontStyle: "italic" }}>New Chapter.</span>
           </h1>
           <p style={{ fontSize: 18, color: "#43474e", lineHeight: 1.6, maxWidth: 560, margin: "0 auto 40px" }}>
             The neighborhood marketplace for students and book lovers. Buy, sell, or donate textbooks and literature within your community.
           </p>
-          <form onSubmit={handleSearch} style={{ display: "flex", alignItems: "center", backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 9999, padding: "6px 6px 6px 20px", maxWidth: 680, margin: "0 auto", boxShadow: "0 2px 8px rgba(0,32,69,0.06)" }}>
+          <form onSubmit={handleSearch} className="search-form" style={{ display: "flex", alignItems: "center", backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 9999, padding: "6px 6px 6px 20px", maxWidth: 680, margin: "0 auto", boxShadow: "0 2px 8px rgba(0,32,69,0.06)" }}>
             <span className="material-symbols-outlined" style={{ color: "#74777f", marginRight: 12, fontSize: 22 }}>search</span>
-            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title, author, or category…" style={{ flex: 1, border: "none", outline: "none", fontSize: 16, color: "#1a1c1c", backgroundColor: "transparent", fontFamily: "'Plus Jakarta Sans', sans-serif" }} />
-            <button type="submit" style={{ backgroundColor: "#002045", color: "#fff", border: "none", borderRadius: 9999, padding: "10px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.05em" }}>Search</button>
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search title, author, category…" style={{ flex: 1, minWidth: 0, width: 0, border: "none", outline: "none", fontSize: 16, color: "#1a1c1c", backgroundColor: "transparent", fontFamily: "'Plus Jakarta Sans', sans-serif" }} />
+            <button type="submit" style={{ backgroundColor: "#002045", color: "#fff", border: "none", borderRadius: 9999, padding: "10px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.05em", whiteSpace: "nowrap" }}>Search</button>
           </form>
         </div>
       </section>
 
-      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "48px 40px 80px" }}>
+      <main className="main-content" style={{ maxWidth: 1280, margin: "0 auto", padding: "48px 40px 80px" }}>
 
         {/* ── Nearby Finds ── */}
         <section style={{ marginBottom: 64 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
+          <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
             <div>
               <h2 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 32, fontWeight: 600, color: "#002045", marginBottom: 4 }}>Nearby Finds</h2>
               <p style={{ fontSize: 16, color: "#43474e" }}>Fresh listings from your community.</p>
             </div>
-            <Link href="/books" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", color: "#002045", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/books" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", color: "#002045", textDecoration: "none", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
               View All <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
             </Link>
           </div>
 
           {booksLoading ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 24 }}>
+            <div className="books-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 24 }}>
               {[...Array(8)].map((_, i) => <div key={i} style={{ backgroundColor: "#eeeeed", borderRadius: 12, height: 300 }} />)}
             </div>
           ) : recentBooks.length === 0 ? (
@@ -378,7 +378,7 @@ function HomeContent() {
               {user && <Link href="/add-book" style={{ backgroundColor: "#904d00", color: "#fff", padding: "10px 24px", borderRadius: 9999, textDecoration: "none", fontSize: 14, fontWeight: 600 }}>List a Book</Link>}
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 24 }}>
+            <div className="books-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 24 }}>
               {recentBooks.map((book) => (
                 <Link key={book.id} href={`/books/${book.id}`} style={{ textDecoration: "none" }}>
                   <div style={{ backgroundColor: "#fff", borderRadius: 12, border: "1px solid #c4c6cf", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", cursor: "pointer", transition: "box-shadow 0.3s" }}
@@ -414,7 +414,7 @@ function HomeContent() {
         </section>
 
         {/* ── How It Works ── */}
-        <section style={{ backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 24, padding: "56px 40px", marginBottom: 64, textAlign: "center" }}>
+        <section className="how-it-works" style={{ backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 24, padding: "56px 40px", marginBottom: 64, textAlign: "center" }}>
           <h2 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 32, fontWeight: 600, color: "#002045", marginBottom: 48 }}>The Circle of Knowledge</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 40 }}>
             {[
@@ -440,12 +440,12 @@ function HomeContent() {
 
         {/* ── Categories ── */}
         <section style={{ marginBottom: 64 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
+          <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
             <div>
               <h2 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 32, fontWeight: 600, color: "#002045", marginBottom: 4 }}>Explore Collections</h2>
               <p style={{ fontSize: 16, color: "#43474e" }}>Hand-picked categories for every reader.</p>
             </div>
-            <Link href="/books" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", color: "#002045", textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}>
+            <Link href="/books" style={{ fontSize: 14, fontWeight: 600, letterSpacing: "0.05em", color: "#002045", textDecoration: "none", display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap" }}>
               View All <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
             </Link>
           </div>
@@ -465,26 +465,26 @@ function HomeContent() {
 
         {/* ── Bento Why Join ── */}
         <section>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 24 }}>
-            <div style={{ gridColumn: "span 2", gridRow: "span 2", backgroundColor: "#002045", color: "#fff", borderRadius: 24, padding: 40, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div className="bento-grid">
+            <div className="bento-card bento-hero" style={{ backgroundColor: "#002045", color: "#fff", borderRadius: 24, padding: 40, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
               <div>
                 <h3 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 28, fontWeight: 600, lineHeight: 1.3, marginBottom: 16 }}>Empowering a Circular Academic Economy.</h3>
                 <p style={{ fontSize: 16, opacity: 0.85, lineHeight: 1.6 }}>Stop letting expensive textbooks collect dust. Help the next batch of students while earning back your investment.</p>
               </div>
             </div>
-            <div style={{ gridColumn: "span 2", backgroundColor: "#fe932c", color: "#2f1500", borderRadius: 24, padding: 32, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div className="bento-card bento-wide" style={{ backgroundColor: "#fe932c", color: "#2f1500", borderRadius: 24, padding: 32, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <h3 style={{ fontFamily: "'Source Serif 4', serif", fontSize: 22, fontWeight: 600 }}>Community Verified</h3>
                 <span className="material-symbols-outlined" style={{ fontSize: 32 }}>verified_user</span>
               </div>
               <p style={{ fontSize: 15, opacity: 0.9, lineHeight: 1.5 }}>Every user is verified via academic or social credentials to ensure a safe exchange environment.</p>
             </div>
-            <div style={{ backgroundColor: "#a6f2d1", color: "#002116", borderRadius: 24, padding: 32 }}>
+            <div className="bento-card" style={{ backgroundColor: "#a6f2d1", color: "#002116", borderRadius: 24, padding: 32 }}>
               <span className="material-symbols-outlined" style={{ fontSize: 32, display: "block", marginBottom: 12 }}>eco</span>
               <h4 style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Sustainable</h4>
               <p style={{ fontSize: 14, lineHeight: 1.5 }}>Reduces paper waste significantly.</p>
             </div>
-            <div style={{ backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 24, padding: 32 }}>
+            <div className="bento-card" style={{ backgroundColor: "#fff", border: "1px solid #c4c6cf", borderRadius: 24, padding: 32 }}>
               <span className="material-symbols-outlined" style={{ fontSize: 32, color: "#002045", display: "block", marginBottom: 12 }}>payments</span>
               <h4 style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#002045", marginBottom: 8 }}>Affordable</h4>
               <p style={{ fontSize: 14, color: "#43474e", lineHeight: 1.5 }}>Access materials at 40–70% lower costs.</p>
@@ -496,7 +496,7 @@ function HomeContent() {
 
       {/* ── Footer ── */}
       <footer style={{ backgroundColor: "#fff", borderTop: "1px solid #c4c6cf" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 40px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 32 }}>
+        <div className="footer-grid" style={{ maxWidth: 1280, margin: "0 auto", padding: "40px 40px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 32 }}>
           <div>
             <span style={{ fontFamily: "'Source Serif 4', serif", fontSize: 22, fontWeight: 700, color: "#002045", display: "block", marginBottom: 12 }}>Book Undo</span>
             <p style={{ fontSize: 14, color: "#43474e", lineHeight: 1.6 }}>© {new Date().getFullYear()} Book Undo. Building a circular economy for knowledge.</p>
@@ -523,8 +523,8 @@ function HomeContent() {
 
       {/* ── Chat Modal Overlay ── */}
       {activeChatId && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 200, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-          <div style={{ width: "100%", maxWidth: 480, height: "80vh", backgroundColor: "#fff", borderRadius: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.2)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div className="chat-modal-overlay" style={{ position: "fixed", inset: 0, zIndex: 200, backgroundColor: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div className="chat-modal" style={{ width: "100%", maxWidth: 480, height: "80vh", backgroundColor: "#fff", borderRadius: 16, boxShadow: "0 20px 50px rgba(0,0,0,0.2)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             {/* Header */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #eeeeed", padding: "14px 18px" }}>
               <div style={{ minWidth: 0 }}>
@@ -586,12 +586,12 @@ function HomeContent() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                style={{ flex: 1, borderRadius: 9999, border: "1px solid #c4c6cf", padding: "10px 16px", outline: "none", fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                style={{ flex: 1, minWidth: 0, borderRadius: 9999, border: "1px solid #c4c6cf", padding: "10px 16px", outline: "none", fontSize: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
               />
               <button
                 onClick={sendMessage}
                 disabled={!newMessage.trim()}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: "50%", border: "none", backgroundColor: "#904d00", color: "#fff", cursor: "pointer", opacity: !newMessage.trim() ? 0.5 : 1 }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: "50%", border: "none", backgroundColor: "#904d00", color: "#fff", cursor: "pointer", opacity: !newMessage.trim() ? 0.5 : 1, flexShrink: 0 }}
               >
                 ➤
               </button>
@@ -603,7 +603,61 @@ function HomeContent() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');
+
+        * { box-sizing: border-box; }
+
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; vertical-align: middle; }
+
+        /* ── Bento grid: responsive, no manual span needed on mobile ── */
+        .bento-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 24px;
+        }
+        .bento-hero { grid-column: span 2; grid-row: span 2; }
+        .bento-wide { grid-column: span 2; }
+
+        @media (max-width: 900px) {
+          .bento-grid { grid-template-columns: repeat(2, 1fr); }
+          .bento-hero { grid-column: span 2; grid-row: span 1; }
+          .bento-wide { grid-column: span 2; }
+        }
+
+        @media (max-width: 560px) {
+          .bento-grid { grid-template-columns: 1fr; gap: 16px; }
+          .bento-hero, .bento-wide, .bento-card { grid-column: span 1 !important; grid-row: span 1 !important; }
+        }
+
+        /* ── General mobile responsiveness ── */
+        @media (max-width: 768px) {
+          .nav-inner { padding: 0 16px !important; flex-wrap: wrap; height: auto !important; min-height: 64px; gap: 8px; }
+          .nav-actions { gap: 8px !important; flex-wrap: wrap; }
+          .list-book-btn { padding: 6px 14px !important; font-size: 13px !important; }
+          .signout-btn { font-size: 12px !important; }
+          .chat-dropdown { position: fixed !important; top: 64px !important; left: 12px !important; right: 12px !important; width: auto !important; max-width: none !important; }
+
+          .hero-section { padding: 48px 16px !important; }
+          .search-form { flex-wrap: nowrap; padding: 4px 4px 4px 12px !important; max-width: 100% !important; }
+          .search-form input { font-size: 14px !important; min-width: 0 !important; }
+          .search-form button { padding: 10px 16px !important; font-size: 13px !important; flex-shrink: 0; }
+          .search-form .material-symbols-outlined { font-size: 18px !important; margin-right: 6px !important; flex-shrink: 0; }
+
+          .main-content { padding: 32px 16px 56px !important; }
+          .section-header { flex-wrap: wrap; gap: 12px; }
+          .books-grid { grid-template-columns: repeat(auto-fill,minmax(150px,1fr)) !important; gap: 14px !important; }
+          .how-it-works { padding: 36px 20px !important; }
+
+          .footer-grid { padding: 32px 20px !important; gap: 24px !important; }
+
+          /* Chat modal: full-screen below tablet width so it never gets clipped */
+          .chat-modal-overlay { padding: 0 !important; align-items: stretch !important; }
+          .chat-modal { max-width: 100% !important; width: 100% !important; height: 100vh !important; height: 100dvh !important; border-radius: 0 !important; }
+        }
+
+        @media (max-width: 380px) {
+          .search-form button { padding: 9px 12px !important; font-size: 12px !important; }
+          .books-grid { grid-template-columns: repeat(2,1fr) !important; }
+        }
       `}</style>
     </div>
   );

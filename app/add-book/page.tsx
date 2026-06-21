@@ -165,21 +165,21 @@ export default function AddBookPage() {
       <div className="flex-grow w-full max-w-[1280px] mx-auto px-4 md:px-10 py-6">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="font-headline text-[32px] md:text-[48px] leading-tight font-bold text-primary mb-1">
+          <h1 className="font-headline text-[28px] sm:text-[32px] md:text-[48px] leading-tight font-bold text-primary mb-1">
             Share Your Knowledge
           </h1>
-          <p className="text-[16px] md:text-[18px] text-on-surface-variant">
+          <p className="text-[15px] md:text-[18px] text-on-surface-variant">
             Turn your old books into new opportunities for someone else.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Form Section */}
-          <div className="lg:col-span-8 bg-surface-container-lowest p-6 md:p-10 rounded-xl shadow-[0_4px_20px_-2px_rgba(0,32,69,0.08)] border border-outline-variant/30">
+          <div className="lg:col-span-8 bg-surface-container-lowest p-4 sm:p-6 md:p-10 rounded-xl shadow-[0_4px_20px_-2px_rgba(0,32,69,0.08)] border border-outline-variant/30">
             <form className="space-y-6" onSubmit={handleSubmit}>
               {/* Book Basic Info */}
               <section>
-                <h2 className="text-[24px] font-semibold text-primary mb-3 border-b border-outline-variant pb-2">
+                <h2 className="text-[20px] sm:text-[24px] font-semibold text-primary mb-3 border-b border-outline-variant pb-2">
                   Book Details
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-3">
@@ -280,7 +280,7 @@ export default function AddBookPage() {
                 <h2 className="text-[12px] font-medium text-on-surface-variant uppercase tracking-wider mb-3">
                   Transaction Type
                 </h2>
-                <div className="flex flex-wrap gap-3">
+                <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-3">
                   {TRANSACTION_OPTIONS.map((opt) => {
                     const isActive = transactionType === opt.type;
                     return (
@@ -288,16 +288,16 @@ export default function AddBookPage() {
                         key={opt.type}
                         type="button"
                         onClick={() => setTransactionType(opt.type)}
-                        className={`flex-1 min-w-[120px] flex flex-col items-center gap-1 p-3 border-2 rounded-xl transition-all ${
+                        className={`sm:flex-1 sm:min-w-[120px] flex flex-col items-center gap-1 p-2 sm:p-3 border-2 rounded-xl transition-all ${
                           isActive
                             ? "bg-secondary-container border-secondary-container text-white"
                             : "bg-surface border-outline-variant hover:border-secondary-container"
                         }`}
                       >
-                        <span className="material-symbols-outlined">
+                        <span className="material-symbols-outlined text-[20px] sm:text-[24px]">
                           {opt.icon}
                         </span>
-                        <span className="text-[14px] font-semibold tracking-wide">
+                        <span className="text-[11px] sm:text-[14px] font-semibold tracking-wide text-center">
                           {opt.label}
                         </span>
                       </button>
@@ -392,10 +392,10 @@ export default function AddBookPage() {
                       add_a_photo
                     </span>
                   </div>
-                  <p className="text-[14px] font-semibold text-primary">
+                  <p className="text-[14px] font-semibold text-primary text-center">
                     Click to upload or drag and drop
                   </p>
-                  <p className="text-[14px] text-on-surface-variant mt-1">
+                  <p className="text-[13px] sm:text-[14px] text-on-surface-variant mt-1 text-center">
                     High resolution JPG, PNG (Max 5MB)
                   </p>
                 </div>
@@ -428,7 +428,7 @@ export default function AddBookPage() {
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="w-full bg-secondary text-white py-3 rounded-xl text-[24px] font-semibold shadow-md hover:brightness-110 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full bg-secondary text-white py-3 rounded-xl text-[18px] sm:text-[24px] font-semibold shadow-md hover:brightness-110 transition-all active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {uploading ? "Uploading..." : "List My Book"}
                   {!uploading && (
@@ -445,24 +445,24 @@ export default function AddBookPage() {
             <div className="bg-primary-container text-on-primary-container p-6 rounded-xl shadow-lg relative overflow-hidden">
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-14 h-14 rounded-full border-2 border-on-primary-container flex items-center justify-center bg-primary text-white text-[20px] font-semibold">
+                  <div className="w-14 h-14 rounded-full border-2 border-on-primary-container flex items-center justify-center bg-primary text-white text-[20px] font-semibold shrink-0">
                     {avatarInitial}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-[12px] opacity-80 uppercase tracking-tighter">
                       Listing as
                     </p>
-                    <h3 className="text-[24px] font-semibold text-white">
+                    <h3 className="text-[20px] sm:text-[24px] font-semibold text-white truncate">
                       {displayName}
                     </h3>
                   </div>
                 </div>
                 {displayEmail && (
-                  <div className="flex items-center gap-2 bg-surface-container-lowest/10 p-2 rounded-lg mb-3">
-                    <span className="material-symbols-outlined text-[18px]">
+                  <div className="flex items-center gap-2 bg-surface-container-lowest/10 p-2 rounded-lg mb-3 min-w-0">
+                    <span className="material-symbols-outlined text-[18px] shrink-0">
                       mail
                     </span>
-                    <span className="text-[14px]">{displayEmail}</span>
+                    <span className="text-[14px] truncate">{displayEmail}</span>
                   </div>
                 )}
                 <p className="text-[14px] opacity-90 leading-relaxed">
@@ -482,12 +482,12 @@ export default function AddBookPage() {
 
             {/* Tips Card */}
             <div className="bg-surface-container p-6 rounded-xl border border-outline-variant">
-              <h3 className="text-[24px] font-semibold text-primary mb-3">
+              <h3 className="text-[20px] sm:text-[24px] font-semibold text-primary mb-3">
                 Quick Tips
               </h3>
               <ul className="space-y-3">
                 <li className="flex gap-3 items-start">
-                  <span className="material-symbols-outlined text-secondary">
+                  <span className="material-symbols-outlined text-secondary shrink-0">
                     check_circle
                   </span>
                   <p className="text-[14px] text-on-surface-variant">
@@ -496,7 +496,7 @@ export default function AddBookPage() {
                   </p>
                 </li>
                 <li className="flex gap-3 items-start">
-                  <span className="material-symbols-outlined text-secondary">
+                  <span className="material-symbols-outlined text-secondary shrink-0">
                     check_circle
                   </span>
                   <p className="text-[14px] text-on-surface-variant">
@@ -505,7 +505,7 @@ export default function AddBookPage() {
                   </p>
                 </li>
                 <li className="flex gap-3 items-start">
-                  <span className="material-symbols-outlined text-secondary">
+                  <span className="material-symbols-outlined text-secondary shrink-0">
                     check_circle
                   </span>
                   <p className="text-[14px] text-on-surface-variant">

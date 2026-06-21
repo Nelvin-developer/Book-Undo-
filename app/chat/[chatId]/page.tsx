@@ -130,7 +130,7 @@ export default function ChatPage() {
       <div className="flex items-center gap-3 border-b border-outline-variant bg-surface-container-lowest px-4 py-3 shadow-[0_2px_8px_-2px_rgba(0,32,69,0.06)]">
         <Link
           href="/chats"
-          className="flex items-center justify-center w-9 h-9 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors"
+          className="flex items-center justify-center w-9 h-9 rounded-full text-on-surface-variant hover:bg-surface-container-low transition-colors shrink-0"
         >
           <span className="material-symbols-outlined text-[20px]">
             arrow_back
@@ -143,7 +143,7 @@ export default function ChatPage() {
           )?.charAt(0).toUpperCase() || "?"}
         </div>
         <div className="min-w-0">
-          <h1 className="font-headline text-[16px] font-semibold text-primary truncate">
+          <h1 className="font-headline text-[15px] sm:text-[16px] font-semibold text-primary truncate">
             {chat?.bookTitle}
           </h1>
           <p className="text-[13px] text-on-surface-variant truncate">
@@ -153,7 +153,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-surface">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 space-y-3 bg-surface">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center mt-12 text-on-surface-variant">
             <span className="material-symbols-outlined text-5xl text-outline-variant mb-2">
@@ -170,7 +170,7 @@ export default function ChatPage() {
               className={`flex ${isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-xs rounded-2xl px-4 py-2 shadow-sm ${
+                className={`max-w-[85%] sm:max-w-xs rounded-2xl px-4 py-2 shadow-sm break-words ${
                   isMe
                     ? "bg-primary text-white rounded-br-md"
                     : "bg-surface-container-lowest border border-outline-variant/40 text-on-surface rounded-bl-md"
@@ -190,19 +190,19 @@ export default function ChatPage() {
       </div>
 
       {/* Input Bar */}
-      <div className="flex items-center gap-2 border-t border-outline-variant bg-surface-container-lowest px-4 py-3">
+      <div className="flex items-center gap-2 border-t border-outline-variant bg-surface-container-lowest px-3 sm:px-4 py-3">
         <input
           type="text"
           placeholder="Type a message…"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 rounded-full border border-outline-variant bg-surface px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
+          className="flex-1 min-w-0 rounded-full border border-outline-variant bg-surface px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
         />
         <button
           onClick={sendMessage}
           disabled={!newMessage.trim()}
-          className="flex items-center justify-center w-12 h-12 rounded-full bg-secondary text-white shadow-md hover:brightness-110 active:scale-[0.96] transition-all disabled:opacity-50 disabled:active:scale-100"
+          className="flex items-center justify-center w-12 h-12 rounded-full bg-secondary text-white shadow-md hover:brightness-110 active:scale-[0.96] transition-all disabled:opacity-50 disabled:active:scale-100 shrink-0"
         >
           <span className="material-symbols-outlined text-[20px]">send</span>
         </button>

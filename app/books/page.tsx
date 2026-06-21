@@ -1,95 +1,60 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import {
-  collection,
-  getDocs,
-  orderBy,
-  query,
   doc,
-  setDoc,
-  deleteDoc,
+  getDoc,
+  collection,
+  query,
   where,
+  getDocs,
+  addDoc,
+  updateDoc,
 } from "firebase/firestore";
-import { db } from "../../lib/firebase";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
 
 interface Book {
-  id: string;
   title: string;
   author: string;
   category: string;
   price: number;
-  district: string;
+  district?: string;
   town?: string;
-  condition: string;
-  description: string;
-  imageUrl: string;
-  ownerName: string;
-  ownerEmail: string;
-  createdAt: any;
+  condition?: string;
+  description?: string;
+  imageUrl?: string;
+  ownerName?: string;
+  ownerEmail?: string;
+  ownerId?: string;
+  phoneNumber?: string;
+  whatsappNumber?: string;
+  status?: "AVAILABLE" | "SOLD";
 }
 
-const DISTRICTS = [
-  "All Districts",
-  "Thiruvananthapuram",
-  "Kollam",
-  "Pathanamthitta",
-  "Alappuzha",
-  "Kottayam",
-  "Idukki",
-  "Ernakulam",
-  "Thrissur",
-  "Palakkad",
-  "Malappuram",
-  "Kozhikode",
-  "Wayanad",
-  "Kannur",
-  "Kasaragod",
-];
-
-const CATEGORIES = [
-  "All Categories",
-  "Novel",
-  "Engineering",
-  "School",
-  "College",
-  "Competitive Exam",
-  "Biography",
-  "Comics",
-  "Science",
-  "History",
-  "Self Help",
-  "Other",
-];
-
-export default function BooksPage() {
-  const [books, setBooks] = useState<Book[]>([]);
+export default function BookDetailsPage() {
+  const params = useParams();
+  const router = useRouter();
+  const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("All Districts");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-  const [user, setUser] = useState<any>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [statusUpdating, setStatusUpdating] = useState(false);
+  const [starting, setStarting] = useState(false);
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
-    if (userData.uid) {
-      setUser(userData);
-      fetchFavorites(userData.uid);
-    }
-    fetchBooks();
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user?.uid) setCurrentUserId(user.uid);
+    fetchBook();
   }, []);
 
-  const fetchBooks = async () => {
+  const fetchBook = async () => {
     try {
-      const q = query(collection(db, "books"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Book[];
-      setBooks(data);
+      const bookRef = doc(db, "books", params.id as string);
+      const bookSnap = await getDoc(bookRef);
+      if (bookSnap.exists()) {
+        setBook(bookSnap.data() as Book);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -97,67 +62,70 @@ export default function BooksPage() {
     }
   };
 
-  const fetchFavorites = async (uid: string) => {
+  const handleMarkAsSold = async () => {
+    if (!book || statusUpdating) return;
+    const newStatus = book.status === "SOLD" ? "AVAILABLE" : "SOLD";
     try {
-      const q = query(collection(db, "favorites"), where("userId", "==", uid));
-      const snapshot = await getDocs(q);
-      const favIds = new Set(
-        snapshot.docs.map((doc) => doc.data().bookId as string)
-      );
-      setFavorites(favIds);
+      setStatusUpdating(true);
+      await updateDoc(doc(db, "books", params.id as string), {
+        status: newStatus,
+      });
+      setBook((prev) => (prev ? { ...prev, status: newStatus } : prev));
     } catch (error) {
       console.error(error);
+      alert("Failed to update status. Please try again.");
+    } finally {
+      setStatusUpdating(false);
     }
   };
 
-  const toggleFavorite = async (e: React.MouseEvent, book: Book) => {
-    e.preventDefault();
-    if (!user) {
+  const handleChat = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!user.uid) {
       alert("Please login first");
       return;
     }
-    const favDocId = `${user.uid}_${book.id}`;
-    const favRef = doc(db, "favorites", favDocId);
+
+    if (user.uid === book?.ownerId) {
+      alert("You cannot chat with yourself");
+      return;
+    }
+
     try {
-      if (favorites.has(book.id)) {
-        await deleteDoc(favRef);
-        setFavorites((prev) => {
-          const next = new Set(prev);
-          next.delete(book.id);
-          return next;
-        });
-      } else {
-        await setDoc(favRef, {
-          userId: user.uid,
-          bookId: book.id,
-          bookTitle: book.title,
-          bookImage: book.imageUrl,
-          bookPrice: book.price,
-          bookAuthor: book.author,
-          createdAt: new Date(),
-        });
-        setFavorites((prev) => new Set(prev).add(book.id));
+      setStarting(true);
+
+      const q = query(
+        collection(db, "chats"),
+        where("bookId", "==", params.id),
+        where("buyerId", "==", user.uid)
+      );
+
+      const existing = await getDocs(q);
+
+      if (!existing.empty) {
+        router.push(`/?openChat=${existing.docs[0].id}`);
+        return;
       }
+
+      const chatRef = await addDoc(collection(db, "chats"), {
+        bookId: params.id,
+        bookTitle: book?.title,
+        buyerId: user.uid,
+        buyerName: user.name,
+        sellerId: book?.ownerId,
+        sellerName: book?.ownerName,
+        createdAt: new Date(),
+      });
+
+      router.push(`/?openChat=${chatRef.id}`);
     } catch (error) {
       console.error(error);
+      alert("Failed to start chat");
+    } finally {
+      setStarting(false);
     }
   };
-
-  const filteredBooks = books.filter((book) => {
-    const matchesSearch =
-      book.title.toLowerCase().includes(search.toLowerCase()) ||
-      book.author.toLowerCase().includes(search.toLowerCase());
-
-    const matchesDistrict =
-      selectedDistrict === "All Districts" ||
-      book.district === selectedDistrict;
-
-    const matchesCategory =
-      selectedCategory === "All Categories" ||
-      book.category === selectedCategory;
-
-    return matchesSearch && matchesDistrict && matchesCategory;
-  });
 
   if (loading) {
     return (
@@ -166,162 +134,208 @@ export default function BooksPage() {
           <span className="material-symbols-outlined animate-pulse text-5xl">
             menu_book
           </span>
-          <p className="text-[14px] font-medium">Loading books…</p>
+          <p className="text-[14px] font-medium">Loading book…</p>
         </div>
       </main>
     );
   }
 
+  if (!book) {
+    return (
+      <main className="min-h-screen bg-surface flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-on-surface-variant">
+          <span className="material-symbols-outlined text-5xl text-outline-variant">
+            search_off
+          </span>
+          <h1 className="font-headline text-[24px] font-semibold text-primary">
+            Book Not Found
+          </h1>
+        </div>
+      </main>
+    );
+  }
+
+  const isOwner = currentUserId === book.ownerId;
+  const isSold = book.status === "SOLD";
+
   return (
     <main className="min-h-screen bg-surface">
-      <div className="w-full max-w-[1280px] mx-auto px-4 md:px-10 py-6">
-        {/* Page Header */}
-        <div className="mb-6">
-          <h1 className="font-headline text-[32px] md:text-[48px] leading-tight font-bold text-primary mb-1">
-            Browse Books
-          </h1>
-          <p className="text-[16px] md:text-[18px] text-on-surface-variant">
-            Find your next read from the community.
-          </p>
-        </div>
+      <div className="w-full max-w-[800px] mx-auto px-4 md:px-10 py-6">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/30 p-4 sm:p-6 md:p-8 shadow-[0_4px_20px_-2px_rgba(0,32,69,0.08)]">
 
-        {/* Filters Bar */}
-        <div className="bg-surface-container-lowest p-4 md:p-6 rounded-xl border border-outline-variant/30 shadow-[0_4px_20px_-2px_rgba(0,32,69,0.08)] mb-6">
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="relative flex-1">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
-                search
+          {/* SOLD banner */}
+          {isSold && (
+            <div className="mb-5 flex items-center gap-2 rounded-lg bg-error/10 border border-error/20 px-4 py-3">
+              <span className="material-symbols-outlined text-error text-[20px] shrink-0">
+                sell
               </span>
-              <input
-                type="text"
-                placeholder="Search by title or author…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-surface pl-10 pr-3 py-3 rounded-lg border border-outline-variant focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all"
-              />
+              <span className="text-error text-[14px] font-medium">
+                This book has already been sold.
+              </span>
             </div>
+          )}
 
-            <select
-              value={selectedDistrict}
-              onChange={(e) => setSelectedDistrict(e.target.value)}
-              className="bg-surface p-3 rounded-lg border border-outline-variant focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer sm:w-52"
+          {/* Book image with SOLD watermark */}
+          {book.imageUrl && (
+            <div className="relative mb-6 rounded-xl overflow-hidden">
+              <img
+                src={book.imageUrl}
+                alt={book.title}
+                className={`h-56 sm:h-72 md:h-80 w-full object-cover ${
+                  isSold ? "opacity-50 grayscale" : ""
+                }`}
+              />
+              {isSold && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                  <span className="rotate-[-12deg] border-4 border-error text-error font-extrabold text-2xl sm:text-4xl px-4 sm:px-6 py-2 rounded-lg bg-surface-container-lowest/80">
+                    SOLD
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Title + status badge — wraps on narrow screens instead of squeezing */}
+          <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+            <h1 className="font-headline text-[24px] sm:text-[32px] md:text-[40px] font-bold text-primary leading-tight break-words">
+              {book.title}
+            </h1>
+            <span
+              className={`shrink-0 mt-1 sm:mt-2 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
+                isSold
+                  ? "bg-error/10 text-error"
+                  : "bg-tertiary-container text-on-tertiary-container"
+              }`}
             >
-              {DISTRICTS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-surface p-3 rounded-lg border border-outline-variant focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all appearance-none cursor-pointer sm:w-52"
-            >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <p className="mb-4 text-[14px] text-on-surface-variant">
-          {filteredBooks.length} book{filteredBooks.length !== 1 ? "s" : ""} found
-        </p>
-
-        {/* Results Grid */}
-        {filteredBooks.length === 0 ? (
-          <div className="text-center py-16 px-6 bg-surface-container-lowest rounded-xl border border-outline-variant/30">
-            <span className="material-symbols-outlined text-5xl text-outline-variant block mb-3">
-              search_off
+              {isSold ? "Sold" : "Available"}
             </span>
-            <p className="text-on-surface-variant">
-              No books found. Try adjusting your filters.
+          </div>
+
+          {/* Details */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-6">
+            <DetailRow icon="person" label="Author" value={book.author} />
+            <DetailRow icon="category" label="Category" value={book.category} />
+            <DetailRow
+              icon="payments"
+              label="Price"
+              value={`₹${book.price}`}
+            />
+            <DetailRow
+              icon="location_on"
+              label="District"
+              value={book.district || "—"}
+            />
+            <DetailRow icon="place" label="Town" value={book.town || "—"} />
+            <DetailRow
+              icon="auto_awesome"
+              label="Condition"
+              value={book.condition || "—"}
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mb-6 pb-6 border-b border-outline-variant/30">
+            <span className="text-[13px] text-on-surface-variant">
+              Uploaded by
+            </span>
+            <Link
+              href={`/users/${book.ownerId}`}
+              className="flex items-center gap-1 text-[13px] font-semibold text-primary hover:underline"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                storefront
+              </span>
+              {book.ownerName || "—"}
+            </Link>
+          </div>
+
+          {/* Description */}
+          <div className="mb-2">
+            <h2 className="font-headline text-[18px] sm:text-[20px] font-semibold text-primary mb-2">
+              Description
+            </h2>
+            <p className="text-[14px] text-on-surface-variant leading-relaxed break-words">
+              {book.description || "No description available"}
             </p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredBooks.map((book) => (
-              <Link href={`/books/${book.id}`} key={book.id}>
-                <div className="relative h-full flex flex-col bg-surface-container-lowest rounded-xl border border-outline-variant/30 overflow-hidden cursor-pointer transition-shadow hover:shadow-[0_8px_24px_-4px_rgba(0,32,69,0.12)]">
-                  {/* Favorite Button */}
-                  <button
-                    onClick={(e) => toggleFavorite(e, book)}
-                    className="absolute right-2 top-2 z-10 w-9 h-9 rounded-full bg-surface-container-lowest/90 backdrop-blur flex items-center justify-center shadow border border-outline-variant/30"
-                  >
-                    <span
-                      className="material-symbols-outlined text-[20px]"
-                      style={{
-                        fontVariationSettings: favorites.has(book.id)
-                          ? "'FILL' 1, 'wght' 500"
-                          : "'FILL' 0, 'wght' 400",
-                        color: favorites.has(book.id) ? "#904d00" : "#74777f",
-                      }}
-                    >
-                      star
-                    </span>
-                  </button>
 
-                  {/* Image */}
-                  <div className="h-48 w-full bg-surface-container-low overflow-hidden">
-                    {book.imageUrl ? (
-                      <img
-                        src={book.imageUrl}
-                        alt={book.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center">
-                        <span className="material-symbols-outlined text-5xl text-outline-variant">
-                          menu_book
-                        </span>
-                      </div>
-                    )}
-                  </div>
+          {/* ── Mark as Sold — owner only ── */}
+          {isOwner && (
+            <div className="mt-8 pt-6 border-t border-outline-variant/30">
+              <h2 className="font-headline text-[18px] sm:text-[20px] font-semibold text-primary mb-3">
+                Manage Listing
+              </h2>
+              <button
+                onClick={handleMarkAsSold}
+                disabled={statusUpdating}
+                className={`flex items-center gap-2 rounded-xl px-6 py-3 font-semibold text-white shadow-md hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 w-full sm:w-auto justify-center ${
+                  isSold ? "bg-secondary" : "bg-error"
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px]">
+                  {isSold ? "check_circle" : "sell"}
+                </span>
+                {statusUpdating
+                  ? "Updating…"
+                  : isSold
+                  ? "Mark as Available"
+                  : "Mark as Sold"}
+              </button>
+              <p className="mt-2 text-[12px] text-on-surface-variant">
+                {isSold
+                  ? "Mark as available again if the deal didn't go through."
+                  : "Mark as sold once you've found a buyer."}
+              </p>
+            </div>
+          )}
 
-                  {/* Content */}
-                  <div className="p-4 flex flex-col flex-1">
-                    {book.condition && (
-                      <span className="self-start mb-2 text-[10px] font-bold uppercase tracking-wider px-2 py-[2px] rounded bg-tertiary-container text-on-tertiary-container">
-                        {book.condition}
-                      </span>
-                    )}
+          {/* ── Contact Seller — buyers only ── */}
+          {!isOwner && (
+            <div className="mt-8 pt-6 border-t border-outline-variant/30">
+              <h2 className="font-headline text-[18px] sm:text-[20px] font-semibold text-primary mb-3">
+                Contact Seller
+              </h2>
 
-                    <h2 className="font-headline text-[16px] font-semibold text-primary mb-1 line-clamp-2 leading-snug">
-                      {book.title}
-                    </h2>
-                    <p className="text-[13px] text-on-surface-variant mb-3 line-clamp-1">
-                      {book.author}
-                    </p>
+              {isSold ? (
+                <p className="text-[13px] text-on-surface-variant italic">
+                  This book has been sold and is no longer available.
+                </p>
+              ) : (
+                <button
+                  onClick={handleChat}
+                  disabled={starting}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-secondary px-6 py-3 text-white font-semibold shadow-md hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 w-full sm:w-auto"
+                >
+                  <span className="material-symbols-outlined text-[20px]">
+                    chat
+                  </span>
+                  {starting ? "Starting chat…" : "Chat with Seller"}
+                </button>
+              )}
+            </div>
+          )}
 
-                    <div className="mt-auto">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-headline text-[18px] font-semibold text-primary">
-                          ₹{book.price}
-                        </span>
-                        {book.category && (
-                          <span className="text-[11px] font-medium px-2 py-1 rounded-full bg-primary-container text-on-primary-container">
-                            {book.category}
-                          </span>
-                        )}
-                      </div>
-                      <p className="flex items-center gap-1 text-[12px] text-on-surface-variant">
-                        <span className="material-symbols-outlined text-[14px]">
-                          location_on
-                        </span>
-                        {book.district}
-                        {book.town ? `, ${book.town}` : ""}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
     </main>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: string;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center gap-2 min-w-0">
+      <span className="material-symbols-outlined text-on-surface-variant text-[18px] shrink-0">
+        {icon}
+      </span>
+      <span className="text-[13px] text-on-surface-variant shrink-0">{label}:</span>
+      <span className="text-[14px] font-medium text-on-surface truncate">{value}</span>
+    </div>
   );
 }
